@@ -12,6 +12,22 @@ from cloudfit.models import MachineType, ScoredInstance, WorkloadProfile
 
 
 class RecommendRequest(BaseModel):
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "workload": {
+                        "vcpu": 32,
+                        "ram_gb": 120,
+                        "archetype": "io",
+                        "optimize_for": "balanced",
+                    },
+                    "top_k": 3,
+                }
+            ]
+        }
+    }
+
     workload: WorkloadProfile
     region: str | None = Field(
         default=None, description="Restrict candidates to this region (snapshot default: all)."
@@ -49,6 +65,17 @@ class ProvidersResponse(BaseModel):
 
 
 class DiffRequest(BaseModel):
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "a": {"workload": {"vcpu": 16, "ram_gb": 64, "archetype": "io"}},
+                    "b": {"workload": {"vcpu": 64, "ram_gb": 256, "archetype": "io"}},
+                }
+            ]
+        }
+    }
+
     a: RecommendRequest
     b: RecommendRequest
 

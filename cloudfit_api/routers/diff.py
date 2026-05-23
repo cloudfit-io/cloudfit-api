@@ -31,7 +31,7 @@ def _recommend_one(req: RecommendRequest) -> list:
     return [r for r in results if not r.disqualified]
 
 
-@router.post("/diff", response_model=DiffResponse)
+@router.post("/diff", response_model=DiffResponse, summary="Compare two workloads")
 def diff(req: DiffRequest) -> DiffResponse:
     """Recommend for two workloads and report the delta between the top picks.
 

@@ -10,7 +10,7 @@ from ..models import InstancesResponse
 router = APIRouter(tags=["instances"])
 
 
-@router.get("/instances", response_model=InstancesResponse)
+@router.get("/instances", response_model=InstancesResponse, summary="Browse / filter the snapshot")
 def list_instances(
     provider: str | None = None,
     region: str | None = None,

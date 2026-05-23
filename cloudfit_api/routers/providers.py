@@ -14,7 +14,7 @@ from ..models import ProviderInfo, ProvidersResponse
 router = APIRouter(tags=["providers"])
 
 
-@router.get("/providers", response_model=ProvidersResponse)
+@router.get("/providers", response_model=ProvidersResponse, summary="List providers in the snapshot")
 def list_providers() -> ProvidersResponse:
     """Return per-provider instance counts, regions, and status breakdown."""
     by_provider: dict[str, list[MachineType]] = defaultdict(list)

@@ -12,7 +12,7 @@ from ..models import RecommendRequest, RecommendResponse
 router = APIRouter(tags=["recommend"])
 
 
-@router.post("/recommend", response_model=RecommendResponse)
+@router.post("/recommend", response_model=RecommendResponse, summary="Rank machine types for a workload")
 def recommend(req: RecommendRequest) -> RecommendResponse:
     """Score candidate instances against a workload profile and return the top picks.
 
