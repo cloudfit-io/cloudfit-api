@@ -1,3 +1,14 @@
+---
+title: cloudfit-api
+emoji: 🖥️
+colorFrom: green
+colorTo: blue
+sdk: docker
+app_port: 8080
+pinned: false
+license: apache-2.0
+---
+
 # cloudfit-api
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue)](https://www.python.org/downloads/)
