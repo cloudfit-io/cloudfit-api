@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "cloudfit-api: FastAPI service exposing cloudfit-core recommendations over HTTP"
+authors:
+  - family-names: Kasaraneni
+    given-names: Chaitanya Krishna
+    orcid: "https://orcid.org/0000-0001-5792-1095"
+type: software
+version: 0.1.0
+date-released: "2026-05-23"
+license: Apache-2.0
+repository-code: "https://github.com/cloudfit-io/cloudfit-api"
+keywords:
+  - cloud
+  - fastapi
+  - rest-api
+  - machine-type
+  - bioinformatics
+  - cloudfit

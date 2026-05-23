@@ -1,0 +1,16 @@
+.git
+.github
+tests
+venv
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+*.egg-info
+dist
+build
+.DS_Store
+Makefile
+CITATION.cff

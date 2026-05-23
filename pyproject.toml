@@ -1,0 +1,62 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cloudfit-api"
+version = "0.1.0"
+description = "FastAPI service exposing cloudfit-core recommendations over HTTP"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+authors = [
+  { name = "Chaitanya Krishna Kasaraneni", email = "kc.kasaraneni@gmail.com" }
+]
+keywords = [
+  "cloud", "fastapi", "rest-api", "machine-type",
+  "bioinformatics", "cloudfit", "instance-recommendation"
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Framework :: FastAPI",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+  "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+]
+requires-python = ">=3.10"
+dependencies = [
+  "cloudfit-core>=0.1.0",
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.29",
+  "pydantic>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.0",
+  "pytest-cov",
+  "httpx>=0.27",
+  "ruff",
+  "mypy",
+]
+
+[project.urls]
+Homepage = "https://github.com/cloudfit-io/cloudfit-api"
+Repository = "https://github.com/cloudfit-io/cloudfit-api"
+"Bug Tracker" = "https://github.com/cloudfit-io/cloudfit-api/issues"
+ORCID = "https://orcid.org/0000-0001-5792-1095"
+
+[tool.hatch.build.targets.wheel]
+packages = ["cloudfit_api"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
