@@ -10,7 +10,7 @@ CITATION  := CITATION.cff
 CURRENT_VERSION := $(shell sed -n -E 's/^version = "([0-9]+\.[0-9]+\.[0-9]+)".*/\1/p' $(PYPROJECT) | head -1)
 
 .DEFAULT_GOAL := help
-.PHONY: help version major minor patch tag test lint build run clean
+.PHONY: help version major minor patch tag test lint build run clean hf-push release
 
 help:
 	@echo "cloudfit-api — current version: $(CURRENT_VERSION)"
@@ -20,9 +20,13 @@ help:
 	@echo "  make minor    minor bump (x.Y.0)"
 	@echo "  make major    major bump (X.0.0)"
 	@echo ""
+	@echo "Release:"
+	@echo "  make tag      create annotated git tag v$(CURRENT_VERSION)"
+	@echo "  make hf-push  push current main to the Hugging Face Space remote"
+	@echo "  make release  git push --follow-tags AND git push space main (full release)"
+	@echo ""
 	@echo "Other targets:"
 	@echo "  make version  print the current version"
-	@echo "  make tag      create git tag v$(CURRENT_VERSION)"
 	@echo "  make run      run the API locally with uvicorn --reload"
 	@echo "  make test     run pytest"
 	@echo "  make lint     run ruff"
@@ -75,3 +79,20 @@ build:
 clean:
 	@rm -rf dist build *.egg-info
 	@find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+# Push the current branch to the Hugging Face Space remote (rebuilds the Space).
+# Requires a remote named 'space' pointing at the HF Space git URL.
+hf-push:
+	@if ! git remote get-url space >/dev/null 2>&1; then \
+		echo "error: no 'space' remote configured."; \
+		echo "  add with: git remote add space https://huggingface.co/spaces/<user>/<space>"; \
+		exit 1; \
+	fi; \
+	branch=$$(git symbolic-ref --short HEAD); \
+	echo "pushing $$branch -> space/$$branch (HF Space rebuild)"; \
+	git push space "$$branch"
+
+# Full release: push tags to GitHub (triggers PyPI publish via CI), then push to HF.
+release:
+	@git push --follow-tags
+	@$(MAKE) --no-print-directory hf-push
