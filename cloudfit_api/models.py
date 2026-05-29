@@ -22,6 +22,7 @@ class RecommendRequest(BaseModel):
                         "archetype": "io",
                         "optimize_for": "balanced",
                     },
+                    "region": "us-central1",
                     "top_k": 3,
                 }
             ]
@@ -30,7 +31,8 @@ class RecommendRequest(BaseModel):
 
     workload: WorkloadProfile
     region: str | None = Field(
-        default=None, description="Restrict candidates to this region (snapshot default: all)."
+        default=None,
+        description="Restrict candidates to this region. Bundled snapshot regions: us-central1, us-east1, us-west1, europe-west4, asia-southeast1. Top-level `region` overrides `workload.region`.",
     )
     top_k: int = Field(default=10, ge=1, le=100, description="Number of ranked results to return.")
     candidates: list[MachineType] | None = Field(

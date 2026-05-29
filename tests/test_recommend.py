@@ -71,3 +71,41 @@ def test_recommend_unsatisfiable_returns_empty(client):
     assert body["qualified"] == 0
     assert body["results"] == []
     assert body["disqualified"] > 0
+
+
+def test_recommend_region_filter_restricts_results(client):
+    """All results should be in the requested region when region is specified."""
+    payload = {"workload": _workload(vcpu=4, ram_gb=16), "region": "asia-southeast1", "top_k": 10}
+    r = client.post("/recommend", json=payload)
+    body = r.json()
+    assert body["region"] == "asia-southeast1"
+    assert body["qualified"] > 0
+    for item in body["results"]:
+        assert item["instance"]["region"] == "asia-southeast1"
+
+
+def test_recommend_region_in_workload_works_same_as_top_level(client):
+    """Setting workload.region should have the same effect as top-level region."""
+    payload = {
+        "workload": _workload(vcpu=4, ram_gb=16, region="europe-west4"),
+        "top_k": 5,
+    }
+    r = client.post("/recommend", json=payload)
+    body = r.json()
+    assert body["region"] == "europe-west4"
+    for item in body["results"]:
+        assert item["instance"]["region"] == "europe-west4"
+
+
+def test_recommend_asymmetric_region_availability(client):
+    """asia-southeast1 has fewer families than us-central1 in the bundled snapshot."""
+    a = client.post("/recommend", json={
+        "workload": _workload(vcpu=4, ram_gb=16),
+        "region": "us-central1", "top_k": 100,
+    }).json()
+    b = client.post("/recommend", json={
+        "workload": _workload(vcpu=4, ram_gb=16),
+        "region": "asia-southeast1", "top_k": 100,
+    }).json()
+    # us-central1 has the full catalog; asia-southeast1 has only Tier 1 families
+    assert a["total_candidates"] > b["total_candidates"]

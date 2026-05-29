@@ -21,13 +21,15 @@ _HOURS_PER_MONTH = 730
 
 
 def _recommend_one(req: RecommendRequest) -> list:
+    effective_region = req.region or req.workload.region
     if req.candidates is not None:
         candidates = req.candidates
     else:
         candidates = snapshot.candidates_for(
-            region=req.region, providers=req.workload.providers
+            region=effective_region, providers=req.workload.providers
         )
-    results = rank(req.workload, candidates)
+    workload = req.workload.model_copy(update={"region": effective_region}) if effective_region else req.workload
+    results = rank(workload, candidates)
     return [r for r in results if not r.disqualified]
 
 
