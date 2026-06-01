@@ -5,6 +5,11 @@ All notable changes to `cloudfit-api` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-05-31
+
+### Changed
+- Bumped `cloudfit-core` dependency to `>=0.3.0,<0.4.0`. This picks up the new fit-based performance scoring: top picks now favor exact-fit instances rather than 2x-oversized ones, so `/recommend` returns substantively different (smaller, cheaper) recommendations for the same workload profile across all `optimize_for` modes. No HTTP API surface change.
+
 ## [0.2.0] - 2026-05-28
 
 ### Added
@@ -35,5 +40,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OpenAPI documentation served at `/docs` with worked examples for every endpoint.
 - Apache 2.0 license. CITATION.cff for academic citation.
 
+[0.3.0]: https://github.com/cloudfit-io/cloudfit-api/releases/tag/v0.3.0
 [0.2.0]: https://github.com/cloudfit-io/cloudfit-api/releases/tag/v0.2.0
 [0.1.0]: https://github.com/cloudfit-io/cloudfit-api/releases/tag/v0.1.0

@@ -1,4 +1,4 @@
-"""POST /recommend — rank machine types for a workload."""
+"""POST /recommend: rank machine types for a workload."""
 
 from __future__ import annotations
 
@@ -12,16 +12,18 @@ from ..models import RecommendRequest, RecommendResponse
 router = APIRouter(tags=["recommend"])
 
 
-@router.post("/recommend", response_model=RecommendResponse, summary="Rank machine types for a workload")
+@router.post("/recommend", response_model=RecommendResponse, summary="Recommend machine types")
 def recommend(req: RecommendRequest) -> RecommendResponse:
-    """Score candidate instances against a workload profile and return the top picks.
+    """Rank instances and return the top `top_k`.
 
-    Candidates come from the request body if provided, otherwise from the bundled
-    snapshot filtered by `region` and the workload's `providers` list. Hard floors
-    (region / RAM / vCPU / GPU) are applied by cloudfit-core before scoring.
+    **Candidates.** Defaults to the bundled snapshot, filtered by `region` and the
+    workload's `providers` list. Pass `candidates` to score your own catalog.
 
-    Region precedence: request-level `region` overrides `workload.region`. Either
-    set to enforce a region hard floor.
+    **Region.** Top-level `region` wins over `workload.region`. When set, instances
+    in other regions are disqualified by the hard floor.
+
+    **Hard floors.** Region, RAM, vCPU, and GPU mismatches disqualify candidates
+    before scoring. Counts surface in the response (`qualified`, `disqualified`).
     """
     # Request-level region takes precedence; fall back to workload.region.
     effective_region = req.region or req.workload.region

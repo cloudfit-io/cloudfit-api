@@ -42,24 +42,24 @@ class RecommendRequest(BaseModel):
 
 
 class RecommendResponse(BaseModel):
-    region: str | None
-    total_candidates: int
-    qualified: int
-    disqualified: int
-    results: list[ScoredInstance]
+    region: str | None = Field(description="Effective region used (request-level overrides workload-level).")
+    total_candidates: int = Field(description="Size of the candidate set scored.")
+    qualified: int = Field(description="Candidates that passed all hard floors.")
+    disqualified: int = Field(description="Candidates that failed at least one hard floor.")
+    results: list[ScoredInstance] = Field(description="Top picks, sorted by composite score descending. Length <= top_k.")
 
 
 class InstancesResponse(BaseModel):
     count: int = Field(description="Total instances matching the filters (before limit).")
-    region: str | None
-    instances: list[MachineType]
+    region: str | None = Field(description="Region filter applied (echoed for convenience).")
+    instances: list[MachineType] = Field(description="Page of matching instances, capped by limit.")
 
 
 class ProviderInfo(BaseModel):
-    name: str
-    instance_count: int
-    regions: list[str]
-    statuses: dict[str, int]
+    name: str = Field(description="Provider identifier (e.g. gcp, aws).")
+    instance_count: int = Field(description="Total instances from this provider in the snapshot.")
+    regions: list[str] = Field(description="Distinct regions this provider serves in the snapshot.")
+    statuses: dict[str, int] = Field(description="Count by status: active, deprecated, tombstoned.")
 
 
 class ProvidersResponse(BaseModel):
@@ -78,21 +78,21 @@ class DiffRequest(BaseModel):
         }
     }
 
-    a: RecommendRequest
-    b: RecommendRequest
+    a: RecommendRequest = Field(description="Baseline workload (the 'before').")
+    b: RecommendRequest = Field(description="Comparison workload (the 'after'). Delta is computed as b - a.")
 
 
 class DiffSide(BaseModel):
-    top: ScoredInstance | None
-    qualified: int
+    top: ScoredInstance | None = Field(description="Top pick for this side, or null if nothing qualified.")
+    qualified: int = Field(description="Number of instances that passed hard floors on this side.")
 
 
 class DiffDelta(BaseModel):
-    instance_changed: bool
-    price_hr_delta: float | None = None
-    monthly_cost_delta: float | None = None  # price_hr_delta * 730
-    vcpu_delta: int | None = None
-    ram_gb_delta: float | None = None
+    instance_changed: bool = Field(description="True if the top pick id differs between sides.")
+    price_hr_delta: float | None = Field(default=None, description="b.price_hr - a.price_hr. Positive means b is more expensive.")
+    monthly_cost_delta: float | None = Field(default=None, description="price_hr_delta * 730 (standard hours-per-month convention).")
+    vcpu_delta: int | None = Field(default=None, description="b.vcpu - a.vcpu.")
+    ram_gb_delta: float | None = Field(default=None, description="b.ram_gb - a.ram_gb.")
 
 
 class DiffResponse(BaseModel):

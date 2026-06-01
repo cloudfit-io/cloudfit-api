@@ -1,4 +1,4 @@
-"""GET /instances — browse and filter the bundled snapshot."""
+"""GET /instances: browse and filter the bundled snapshot."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from ..models import InstancesResponse
 router = APIRouter(tags=["instances"])
 
 
-@router.get("/instances", response_model=InstancesResponse, summary="Browse / filter the snapshot")
+@router.get("/instances", response_model=InstancesResponse, summary="List instances")
 def list_instances(
     provider: str | None = None,
     region: str | None = None,
@@ -20,7 +20,12 @@ def list_instances(
     status: str | None = Query(default=None, description="active | deprecated | tombstoned"),
     limit: int = Query(default=100, ge=1, le=1000),
 ) -> InstancesResponse:
-    """Return snapshot instances matching the given filters (capped at `limit`)."""
+    """Filter the bundled snapshot. All filters are ANDed; omit a filter to skip it.
+
+    `count` in the response is the total match across the snapshot; `instances` is
+    the page (capped by `limit`). No pagination cursor yet: bump `limit` if you
+    need more, up to 1000.
+    """
     items = snapshot.filter_instances(
         provider=provider,
         region=region,

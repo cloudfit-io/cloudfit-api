@@ -1,4 +1,4 @@
-"""POST /diff — compare the top recommendation for two workload profiles."""
+"""POST /diff: compare the top recommendation for two workload profiles."""
 
 from __future__ import annotations
 
@@ -33,12 +33,16 @@ def _recommend_one(req: RecommendRequest) -> list:
     return [r for r in results if not r.disqualified]
 
 
-@router.post("/diff", response_model=DiffResponse, summary="Compare two workloads")
+@router.post("/diff", response_model=DiffResponse, summary="Diff two workloads")
 def diff(req: DiffRequest) -> DiffResponse:
-    """Recommend for two workloads and report the delta between the top picks.
+    """Rank `a` and `b` independently, then return the top pick from each plus the
+    `delta` between them.
 
-    Useful for migration planning — e.g. comparing the recommendation for an old
-    workload profile against a new one and seeing the cost/spec impact.
+    **Sign convention:** `delta = b - a`. A positive `price_hr_delta` means `b` is
+    more expensive than `a`. Same for `vcpu_delta` and `ram_gb_delta`.
+
+    **`monthly_cost_delta`** is `price_hr_delta * 730` (the standard cloud convention
+    for hours-per-month).
     """
     qa = _recommend_one(req.a)
     qb = _recommend_one(req.b)

@@ -2,7 +2,7 @@
 
 The snapshot is a static JSON file of normalized `MachineType` records (the same
 shape cloudfit providers emit). It is loaded once and cached. This is what makes
-the API stateless — no database, no live cloud calls, no credentials.
+the API stateless: no database, no live cloud calls, no credentials.
 """
 
 from __future__ import annotations

@@ -13,21 +13,28 @@ from .routers import diff, instances, providers, recommend
 
 
 TAGS_METADATA = [
-    {"name": "recommend", "description": "Rank machine types for a workload profile."},
-    {"name": "instances", "description": "Browse and filter the bundled machine-type snapshot."},
-    {"name": "providers", "description": "Summaries of the providers present in the snapshot."},
-    {"name": "diff", "description": "Compare recommendations for two workloads — useful for migration planning."},
-    {"name": "meta", "description": "Service metadata and health checks."},
+    {"name": "recommend", "description": "Score a workload against the catalog and get ranked machine-type picks."},
+    {"name": "diff", "description": "Compare two workloads. The delta surfaces what changes in cost, vCPU, and RAM if you move between them."},
+    {"name": "instances", "description": "Direct catalog access. Browse the bundled snapshot with filters."},
+    {"name": "providers", "description": "Stats about what is in the snapshot. Useful as a sanity check before calling /recommend."},
+    {"name": "meta", "description": "Service metadata and liveness probe."},
 ]
 
 DESCRIPTION = """
-Stateless HTTP API over [cloudfit-core](https://github.com/cloudfit-io/cloudfit-core).
-Scores cloud machine types against a workload profile using a **bundled provider
-snapshot** — no database, no cloud credentials.
+**Try it now.** Expand `POST /recommend` below, click *Try it out* (a runnable example
+is pre-filled), then *Execute*.
 
-**Try it:** expand `POST /recommend` below, click *Try it out* (a runnable example
-is pre-filled), and *Execute*. Hard floors (RAM / vCPU / GPU) are applied before
-scoring; `optimize_for` is one of `cost`, `balanced`, `performance`, `availability`.
+**Prefer a UI?** [chaitanyakasaraneni-cloudfit-ui.hf.space](https://chaitanyakasaraneni-cloudfit-ui.hf.space): same scoring engine, form-based input.
+
+**Notes for callers**
+- Hard floors (region, RAM, vCPU, GPU) run before scoring. Under-spec candidates
+  appear in the response as `disqualified` with a reason, not silently dropped.
+- `optimize_for` accepts `cost`, `balanced`, `performance`, or `availability`.
+  As of cloudfit-core 0.3, the performance scorer is fit-based: exact match
+  through 1.5x of requested resources scores highest, then decays.
+- Pass `candidates` in the request body to score your own catalog instead of
+  the bundled snapshot.
+- Scoring math: [cloudfit-core](https://github.com/cloudfit-io/cloudfit-core).
 """
 
 
@@ -64,6 +71,7 @@ app.include_router(diff.router)
 
 @app.get("/", tags=["meta"], summary="Service metadata")
 def root() -> dict:
+    """Name, running version, snapshot size, and a pointer to these docs."""
     return {
         "name": settings.title,
         "version": settings.version,
@@ -72,6 +80,7 @@ def root() -> dict:
     }
 
 
-@app.get("/health", tags=["meta"], summary="Health check")
+@app.get("/health", tags=["meta"], summary="Liveness probe")
 def health() -> dict:
+    """Returns `{\"status\": \"ok\"}`. Use for container health checks."""
     return {"status": "ok"}
