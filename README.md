@@ -16,7 +16,7 @@ license: apache-2.0
 
 **HTTP API over [cloudfit-core](https://github.com/cloudfit-io/cloudfit-core).** A thin, stateless FastAPI service that scores cloud machine types against a workload profile.
 
-It ships with a **bundled GCP machine-type snapshot**, so it runs out of the box — no database, no cloud credentials, no provider calls at request time. Point it at a fresher snapshot whenever you like.
+It ships with a **bundled GCP machine-type snapshot**, so it runs out of the box: no database, no cloud credentials, no provider calls at request time. Point it at a fresher snapshot whenever you like.
 
 ---
 
@@ -129,10 +129,10 @@ This is a representative sample, not a live or exhaustive list. Regenerate it fr
 
 ## Ecosystem
 
-- [`cloudfit-core`](https://github.com/cloudfit-io/cloudfit-core) — scoring engine
-- [`cloudfit-provider-gcp`](https://github.com/cloudfit-io/cloudfit-provider-gcp) — GCP machine-type fetcher
-- [`cloudfit-ui`](https://github.com/cloudfit-io/cloudfit-ui) — Gradio demo over the same scoring engine ([live demo](https://chaitanyakasaraneni-cloudfit-ui.hf.space)). Use this if you would rather fill a form than write JSON.
+- [`cloudfit-core`](https://github.com/cloudfit-io/cloudfit-core): scoring engine
+- [`cloudfit-provider-gcp`](https://github.com/cloudfit-io/cloudfit-provider-gcp): GCP machine-type fetcher
+- [`cloudfit-ui`](https://github.com/cloudfit-io/cloudfit-ui): Gradio demo over the same scoring engine ([live demo](https://chaitanyakasaraneni-cloudfit-ui.hf.space)). Use this if you would rather fill a form than write JSON.
 
 ## License
 
-Apache 2.0 — see [LICENSE](LICENSE).
+Apache 2.0: see [LICENSE](LICENSE).
