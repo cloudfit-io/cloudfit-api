@@ -32,6 +32,11 @@ is pre-filled), then *Execute*.
 - `optimize_for` accepts `cost`, `balanced`, `performance`, or `availability`.
   As of cloudfit-core 0.3, the performance scorer is fit-based: exact match
   through 1.5x of requested resources scores highest, then decays.
+- Cost is normalized across the qualifying candidates: the cheapest scores 1.0
+  and the most expensive 0.0, so a real price gap moves the score. A candidate
+  with no price (`price_hr` <= 0) scores 0.0 on cost and is never treated as free.
+- `archetype` is a classification and disk-sizing label only; it does not change
+  ranking in this release (scoring is driven by `optimize_for`).
 - Pass `candidates` in the request body to score your own catalog instead of
   the bundled snapshot.
 - Scoring math: [cloudfit-core](https://github.com/cloudfit-io/cloudfit-core).

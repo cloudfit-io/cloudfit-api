@@ -5,6 +5,12 @@ All notable changes to `cloudfit-api` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+ ## [0.4.0] - 2026-06-02
+
+### Changed
+- Require `cloudfit-core>=0.4.0`: recommendations now use candidate-relative cost scoring and treat unpriced instances as cost 0.0 (not free).
+- `/docs` description documents the cost normalization, unpriced behavior, and that `archetype` does not affect ranking.
+
 ## [0.3.0] - 2026-05-31
 
 ### Changed
