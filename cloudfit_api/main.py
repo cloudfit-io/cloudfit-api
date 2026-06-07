@@ -37,6 +37,10 @@ is pre-filled), then *Execute*.
   with no price (`price_hr` <= 0) scores 0.0 on cost and is never treated as free.
 - `archetype` is a classification and disk-sizing label only; it does not change
   ranking in this release (scoring is driven by `optimize_for`).
+- `workload.headroom` (default 0) asks for spare capacity above the declared
+  vcpu/ram_gb, as a fraction (0.25 = 25% more, i.e. 1.25x). `workload.headroom_mode`
+  is `hard` (raise the floor, so instances without the buffer are disqualified) or
+  `soft` (prefer the buffer in scoring without disqualifying).
 - Pass `candidates` in the request body to score your own catalog instead of
   the bundled snapshot.
 - Scoring math: [cloudfit-core](https://github.com/cloudfit-io/cloudfit-core).

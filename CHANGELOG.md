@@ -5,7 +5,15 @@ All notable changes to `cloudfit-api` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
- ## [0.4.0] - 2026-06-02
+## [0.5.0] - Unreleased
+
+### Added
+- Expose `workload.headroom` and `workload.headroom_mode` (from cloudfit-core 0.5.0). They ride inside the existing `workload` object, so there is no new endpoint or top-level field. `headroom` is a fraction (0.25 = 1.25x); `headroom_mode` is `hard` (raise the floor) or `soft` (prefer in scoring). The `POST /recommend` example and `/docs` notes now document them.
+
+### Changed
+- Require `cloudfit-core>=0.5.0`.
+
+## [0.4.0] - 2026-06-02
 
 ### Changed
 - Require `cloudfit-core>=0.4.0`: recommendations now use candidate-relative cost scoring and treat unpriced instances as cost 0.0 (not free).

@@ -21,6 +21,8 @@ class RecommendRequest(BaseModel):
                         "ram_gb": 120,
                         "archetype": "io",
                         "optimize_for": "balanced",
+                        "headroom": 0.15,
+                        "headroom_mode": "hard",
                     },
                     "region": "us-central1",
                     "top_k": 3,
