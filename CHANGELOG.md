@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [0.7.0] - 2026-06-14
+
 ### Changed
 - Require `cloudfit-core>=0.7.0`, which picks up the revised performance scoring: `/recommend` and `/diff` now spread scores across candidates (perf peaks at an exact fit and decays for oversize) instead of returning ~1.0 for nearly every qualifying instance. No HTTP API surface change; response scores move for over-provisioned candidates.
 
