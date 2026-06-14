@@ -5,6 +5,11 @@ All notable changes to `cloudfit-api` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- Require `cloudfit-core>=0.7.0`, which picks up the revised performance scoring: `/recommend` and `/diff` now spread scores across candidates (perf peaks at an exact fit and decays for oversize) instead of returning ~1.0 for nearly every qualifying instance. No HTTP API surface change; response scores move for over-provisioned candidates.
+
 ## [0.6.1] - 2026-06-14
 
 ### Added

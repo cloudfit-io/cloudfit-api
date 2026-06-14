@@ -32,8 +32,8 @@ is pre-filled), then *Execute*.
 - Hard floors (region, RAM, vCPU, GPU) run before scoring. Under-spec candidates
   appear in the response as `disqualified` with a reason, not silently dropped.
 - `optimize_for` accepts `cost`, `balanced`, `performance`, or `availability`.
-  The performance scorer is fit-based: an exact match through 1.5x of requested
-  resources scores highest, then decays.
+  The performance scorer is fit-based: an exact fit to the requested
+  resources scores highest, and oversize decays.
 - Cost is normalized across the qualifying candidates: the cheapest scores 1.0
   and the most expensive 0.0, so a real price gap moves the score. A candidate
   with no price (`price_hr` <= 0) scores 0.0 on cost and is never treated as free.
