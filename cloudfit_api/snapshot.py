@@ -17,8 +17,26 @@ from .config import settings
 
 @lru_cache(maxsize=1)
 def load_snapshot() -> list[MachineType]:
-    """Load the snapshot JSON into MachineType objects (cached for the process)."""
-    raw = json.loads(settings.snapshot_path.read_text())
+    """Load the snapshot JSON into MachineType objects (cached for the process).
+
+    Raises:
+        RuntimeError: if the snapshot file is missing or not valid JSON. The
+            message names the resolved path so a misconfigured
+            CLOUDFIT_SNAPSHOT_PATH surfaces clearly at startup instead of as an
+            opaque traceback.
+    """
+    path = settings.snapshot_path
+    try:
+        text = path.read_text()
+    except FileNotFoundError as exc:
+        raise RuntimeError(
+            f"Snapshot file not found at {path}. Set CLOUDFIT_SNAPSHOT_PATH to a "
+            "valid machine-type snapshot JSON."
+        ) from exc
+    try:
+        raw = json.loads(text)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"Snapshot file at {path} is not valid JSON: {exc}") from exc
     return [MachineType(**row) for row in raw]
 
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from cloudfit import rank
+from cloudfit.models import ScoredInstance
 
 from .. import snapshot
 from ..models import (
@@ -20,7 +21,7 @@ router = APIRouter(tags=["diff"])
 _HOURS_PER_MONTH = 730
 
 
-def _recommend_one(req: RecommendRequest) -> list:
+def _recommend_one(req: RecommendRequest) -> list[ScoredInstance]:
     effective_region = req.region or req.workload.region
     if req.candidates is not None:
         candidates = req.candidates

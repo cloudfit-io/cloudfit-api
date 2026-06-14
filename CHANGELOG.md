@@ -5,13 +5,21 @@ All notable changes to `cloudfit-api` are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.5.0] - Unreleased
+## [0.6.1] - 2026-06-14
 
 ### Added
-- Expose `workload.headroom` and `workload.headroom_mode` (from cloudfit-core 0.5.0). They ride inside the existing `workload` object, so there is no new endpoint or top-level field. `headroom` is a fraction (0.25 = 1.25x); `headroom_mode` is `hard` (raise the floor) or `soft` (prefer in scoring). The `POST /recommend` example and `/docs` notes now document them.
+- Expose `workload.headroom` and `workload.headroom_mode` (from cloudfit-core). They ride inside the existing `workload` object, so there is no new endpoint or top-level field. `headroom` is a fraction (0.25 = 1.25x); `headroom_mode` is `hard` (raise the floor) or `soft` (prefer in scoring). The `POST /recommend` example and `/docs` notes now document them.
+- `POST /recommend` accepts a flat workload body (workload fields at the top level) as a convenience; the reserved keys `region`, `top_k`, and `candidates` stay at the top level. Nested `{"workload": {...}}` requests are unchanged.
+- Tests for the 422 validation path (missing/zero `vcpu`, empty body, unknown field), the flat-body form, and snapshot loading on startup.
 
 ### Changed
-- Require `cloudfit-core>=0.5.0`.
+- Require `cloudfit-core>=0.6.1`: `/recommend` now reflects archetype-aware perf weighting, validated weights, and `extra="forbid"` request models (unknown workload fields return 422).
+- `/docs` description updated: `archetype` now influences ranking via per-component perf weighting.
+- The snapshot loader raises a clear `RuntimeError` naming the resolved path when the snapshot file is missing or invalid JSON, so a misconfigured `CLOUDFIT_SNAPSHOT_PATH` fails loudly at startup.
+- Dockerfile runs as a non-root `appuser`.
+
+### Fixed
+- `cloudfit_api` now passes `mypy --strict` (typed `lifespan`, route handlers, and diff helper).
 
 ## [0.4.0] - 2026-06-02
 
@@ -54,6 +62,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OpenAPI documentation served at `/docs` with worked examples for every endpoint.
 - Apache 2.0 license. CITATION.cff for academic citation.
 
+[0.6.1]: https://github.com/cloudfit-io/cloudfit-api/releases/tag/v0.6.1
+[0.4.0]: https://github.com/cloudfit-io/cloudfit-api/releases/tag/v0.4.0
 [0.3.0]: https://github.com/cloudfit-io/cloudfit-api/releases/tag/v0.3.0
 [0.2.0]: https://github.com/cloudfit-io/cloudfit-api/releases/tag/v0.2.0
 [0.1.0]: https://github.com/cloudfit-io/cloudfit-api/releases/tag/v0.1.0

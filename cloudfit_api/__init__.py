@@ -1,6 +1,6 @@
 """cloudfit-api: FastAPI service exposing cloudfit-core recommendations over HTTP."""
 
-__version__ = "0.4.0"
+__version__ = "0.6.1"
 __author__ = "Chaitanya Krishna Kasaraneni"
 __license__ = "Apache-2.0"
 

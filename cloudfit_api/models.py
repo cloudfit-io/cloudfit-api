@@ -6,9 +6,13 @@ so the HTTP contract stays in lock-step with the scoring engine.
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from typing import Any
+
+from pydantic import BaseModel, Field, model_validator
 
 from cloudfit.models import MachineType, ScoredInstance, WorkloadProfile
+
+_REQUEST_RESERVED_KEYS = {"workload", "region", "top_k", "candidates"}
 
 
 class RecommendRequest(BaseModel):
@@ -30,6 +34,25 @@ class RecommendRequest(BaseModel):
             ]
         }
     }
+
+    @model_validator(mode="before")
+    @classmethod
+    def _accept_flat_workload(cls, data: Any) -> Any:
+        """Accept a flat workload body as a convenience.
+
+        A request carrying workload fields at the top level (e.g.
+        ``{"vcpu": 32, "ram_gb": 128}``) is rewrapped as ``{"workload": {...}}``.
+        Reserved request keys (region, top_k, candidates) stay at the top level.
+        Already-nested requests pass through unchanged.
+        """
+        if isinstance(data, dict) and "workload" not in data:
+            workload_fields = {
+                k: v for k, v in data.items() if k not in _REQUEST_RESERVED_KEYS
+            }
+            if workload_fields:
+                rest = {k: v for k, v in data.items() if k in _REQUEST_RESERVED_KEYS}
+                return {"workload": workload_fields, **rest}
+        return data
 
     workload: WorkloadProfile
     region: str | None = Field(
