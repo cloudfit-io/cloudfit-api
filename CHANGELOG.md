@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [0.8.2] - 2026-10-23
+
 ### Changed
 - Require `cloudfit-core>=0.8.2`.
 
