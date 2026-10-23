@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [0.8.0] - 2026-10-22
+
 ### Changed
 - Require `cloudfit-core>=0.8.0` for the scoring-depth layers (effective capacity, pricing modes, GPU SKU, explainability).
 
