@@ -39,7 +39,20 @@ is pre-filled), then *Execute*.
   with no price (`price_hr` <= 0) scores 0.0 on cost and is never treated as free.
 - `archetype` sets the per-component perf weighting (e.g. `mem` weights RAM,
   `io` weights local SSD vs `scratch_tb`), so it does influence ranking on top
-  of `optimize_for` and the hard floors.
+  of `optimize_for` and the hard floors. For the `gpu` archetype, GPU throughput
+  (`gpu_type` via the core `GPU_CLASS` table) is scored, so an A100 outranks a T4
+  at equal VRAM.
+- `perf_factor` on a candidate scores effective per-vCPU capacity (a faster family
+  is not equated with a slower one at the same core count) and makes cost reflect
+  cost per unit of work. The bundled snapshot is pre-populated with `perf_factor`
+  and `gpu_type`.
+- `workload.pricing_mode` is `on_demand`, `spot`, or `cud_1yr`; unset defaults to
+  spot for the `burst` archetype and on-demand otherwise. Spot/committed-use
+  prices are used when a candidate carries `spot_price_hr` / `cud_1yr_price_hr`,
+  else cost falls back to on-demand.
+- Each result carries `contributions` (the exact `weight * sub-score` each
+  component added to `score`) and `reason` (a one-line explanation of what drove
+  the pick, including a spot/committed-use note).
 - `workload.headroom` (default 0) asks for spare capacity above the declared
   vcpu/ram_gb, as a fraction (0.25 = 25% more, i.e. 1.25x). `workload.headroom_mode`
   is `hard` (raise the floor, so instances without the buffer are disqualified) or

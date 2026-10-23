@@ -1,5 +1,7 @@
 """Tests for POST /recommend."""
 
+import pytest
+
 
 def _workload(**over):
     base = {"vcpu": 32, "ram_gb": 120, "workload": "io-intensive",
@@ -16,6 +18,46 @@ def test_recommend_returns_ranked_results(client):
     assert len(body["results"]) <= 5
     scores = [x["score"] for x in body["results"]]
     assert scores == sorted(scores, reverse=True)
+
+
+def test_recommend_results_include_contributions_and_reason(client):
+    r = client.post("/recommend", json={"workload": _workload(), "top_k": 3})
+    top = r.json()["results"][0]
+    assert set(top["contributions"]) == {"cost", "perf", "avail"}
+    assert sum(top["contributions"].values()) == pytest.approx(top["score"], abs=1e-2)
+    assert top["reason"]
+
+
+def test_recommend_snapshot_carries_perf_factor(client):
+    r = client.post("/recommend", json={"workload": _workload(), "top_k": 5})
+    for item in r.json()["results"]:
+        assert item["instance"]["perf_factor"] is not None
+
+
+def test_recommend_gpu_archetype_scores_gpu_type(client):
+    wl = _workload(vcpu=12, ram_gb=85, archetype="gpu", optimize_for="performance",
+                   gpu={"required": True, "vram_gb": 40})
+    r = client.post("/recommend", json={"workload": wl, "top_k": 5})
+    assert r.status_code == 200
+    results = r.json()["results"]
+    assert results
+    assert results[0]["instance"]["gpu_type"] is not None
+
+
+def test_recommend_pricing_mode_spot(client):
+    candidates = [
+        {"id": "c3-standard-32", "provider": "gcp", "vcpu": 32, "ram_gb": 128,
+         "price_hr": 2.0, "spot_price_hr": 0.6, "perf_factor": 1.2},
+        {"id": "n2-standard-32", "provider": "gcp", "vcpu": 32, "ram_gb": 128,
+         "price_hr": 1.8, "perf_factor": 1.0},
+    ]
+    wl = _workload(vcpu=32, ram_gb=128, archetype="cpu", optimize_for="cost")
+    wl["pricing_mode"] = "spot"
+    r = client.post("/recommend", json={"workload": wl, "candidates": candidates, "top_k": 2})
+    assert r.status_code == 200
+    top = r.json()["results"][0]
+    assert top["instance"]["id"] == "c3-standard-32"  # spot 0.6 beats n2 on-demand 1.8
+    assert "spot" in top["reason"]
 
 
 def test_recommend_respects_hard_floors(client):

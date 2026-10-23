@@ -7,7 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Changed
+- Require `cloudfit-core>=0.8.0` for the scoring-depth layers (effective capacity, pricing modes, GPU SKU, explainability).
+
+### Added
+- **`contributions` and `reason` on every `/recommend` and `/diff` result** (surfaced automatically by reusing core's `ScoredInstance`). `contributions` is the exact `weight * sub-score` each component added to `score`; `reason` is a one-line explanation including a spot/committed-use note.
+- **`workload.pricing_mode`** (`on_demand`/`spot`/`cud_1yr`) is accepted and forwarded to the scorer; unset defaults to spot for `burst` and on-demand otherwise. Spot/committed-use prices are used when a candidate carries `spot_price_hr` / `cud_1yr_price_hr`.
+- **Bundled snapshot enriched** with `perf_factor` (all 875 instances, from the core `PERF_FACTORS` table), `gpu_type` (all 36 GPU instances), and real `spot_price_hr` / `cud_1yr_price_hr` plus refreshed on-demand prices from a live `cloudfit-provider-gcp` fetch (CPU/RAM instances; GPU instances keep their full on-demand price and have no spot/CUD, since GPU cost is not yet reconstructed). The live demo now scores effective capacity, GPU throughput, and spot/committed-use pricing.
+- Tests for `contributions`/`reason`, snapshot `perf_factor`, GPU-archetype `gpu_type` scoring, and the `pricing_mode: spot` path.
+
+### Changed (docs)
+- OpenAPI description documents `pricing_mode`, `perf_factor`, `gpu_type`, and the `contributions`/`reason` result fields.
 
 ## [0.7.0] - 2026-06-14
 
