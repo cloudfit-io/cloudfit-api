@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Added
+- Python 3.13 and 3.14: tested in CI and declared in the package classifiers.
 
 ## [0.8.0] - 2026-10-22
 
