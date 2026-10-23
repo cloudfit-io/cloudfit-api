@@ -42,7 +42,8 @@ dependencies = [
 dev = [
   "pytest>=7.0",
   "pytest-cov",
-  "httpx>=0.27",
+  "httpx2",
+  "starlette>=1.2",  # first release whose TestClient uses httpx2
   "ruff>=0.15,<0.16",
   "mypy",
 ]
