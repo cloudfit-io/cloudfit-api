@@ -41,7 +41,7 @@ dev = [
   "pytest>=7.0",
   "pytest-cov",
   "httpx>=0.27",
-  "ruff",
+  "ruff>=0.15,<0.16",
   "mypy",
 ]
 
