@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [0.8.5] - 2026-10-23
+
+### Changed
+- Require `cloudfit-core>=0.10.0`, which scores cost as a ratio to the cheapest qualifying option, so one very expensive instance that meets the request no longer flattens the cost ranking.
+
 ## [0.8.4] - 2026-10-23
 
 ### Changed

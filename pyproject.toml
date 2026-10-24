@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cloudfit-api"
-version = "0.8.4"
+version = "0.8.5"
 description = "FastAPI service exposing cloudfit-core recommendations over HTTP"
 readme = "README.md"
 license = { text = "Apache-2.0" }
@@ -32,7 +32,7 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-  "cloudfit-core>=0.8.2",
+  "cloudfit-core>=0.10.0",
   "fastapi>=0.110",
   "uvicorn[standard]>=0.29",
   "pydantic>=2.0",
