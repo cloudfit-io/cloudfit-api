@@ -5,7 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from cloudfit import rank
-from cloudfit.models import ScoredInstance
+from cloudfit.models import MachineType, PricingMode, ScoredInstance
 
 from .. import snapshot
 from ..models import (
@@ -19,6 +19,19 @@ from ..models import (
 router = APIRouter(tags=["diff"])
 
 _HOURS_PER_MONTH = 730
+
+
+def _price_hr(instance: MachineType, mode: PricingMode) -> float:
+    """Hourly price in the pricing mode the workload was ranked on.
+
+    Mirrors core's fallback: spot and committed-use use on-demand when the
+    instance has no positive price for that mode.
+    """
+    if mode == PricingMode.spot and instance.spot_price_hr and instance.spot_price_hr > 0:
+        return instance.spot_price_hr
+    if mode == PricingMode.cud_1yr and instance.cud_1yr_price_hr and instance.cud_1yr_price_hr > 0:
+        return instance.cud_1yr_price_hr
+    return instance.price_hr
 
 
 def _recommend_one(req: RecommendRequest) -> list[ScoredInstance]:
@@ -40,7 +53,11 @@ def diff(req: DiffRequest) -> DiffResponse:
     `delta` between them.
 
     **Sign convention:** `delta = b - a`. A positive `price_hr_delta` means `b` is
-    more expensive than `a`. Same for `vcpu_delta` and `ram_gb_delta`.
+    more expensive than `a`. Same for `vcpu_delta`, `ram_gb_delta`, and
+    `local_ssd_tb_delta`.
+
+    **Prices** are compared in the pricing mode each side was ranked on, so a
+    spot comparison reports a spot cost difference.
 
     **`monthly_cost_delta`** is `price_hr_delta * 730` (the standard cloud convention
     for hours-per-month).
@@ -52,13 +69,16 @@ def diff(req: DiffRequest) -> DiffResponse:
 
     if top_a is not None and top_b is not None:
         ia, ib = top_a.instance, top_b.instance
-        price_delta = round(ib.price_hr - ia.price_hr, 4)
+        price_a = _price_hr(ia, req.a.workload.effective_pricing_mode)
+        price_b = _price_hr(ib, req.b.workload.effective_pricing_mode)
+        price_delta = round(price_b - price_a, 4)
         delta = DiffDelta(
             instance_changed=ia.id != ib.id,
             price_hr_delta=price_delta,
             monthly_cost_delta=round(price_delta * _HOURS_PER_MONTH, 2),
             vcpu_delta=ib.vcpu - ia.vcpu,
             ram_gb_delta=round(ib.ram_gb - ia.ram_gb, 1),
+            local_ssd_tb_delta=round(ib.local_ssd_tb - ia.local_ssd_tb, 2),
         )
     else:
         delta = DiffDelta(instance_changed=top_a is not top_b)

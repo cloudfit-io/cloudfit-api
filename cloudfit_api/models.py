@@ -114,10 +114,11 @@ class DiffSide(BaseModel):
 
 class DiffDelta(BaseModel):
     instance_changed: bool = Field(description="True if the top pick id differs between sides.")
-    price_hr_delta: float | None = Field(default=None, description="b.price_hr - a.price_hr. Positive means b is more expensive.")
+    price_hr_delta: float | None = Field(default=None, description="b price - a price per hour, each in the pricing mode its workload was ranked on (on-demand, spot, or 1-year committed use). Positive means b is more expensive.")
     monthly_cost_delta: float | None = Field(default=None, description="price_hr_delta * 730 (standard hours-per-month convention).")
     vcpu_delta: int | None = Field(default=None, description="b.vcpu - a.vcpu.")
     ram_gb_delta: float | None = Field(default=None, description="b.ram_gb - a.ram_gb.")
+    local_ssd_tb_delta: float | None = Field(default=None, description="b.local_ssd_tb - a.local_ssd_tb (local SSD on the top picks).")
 
 
 class DiffResponse(BaseModel):

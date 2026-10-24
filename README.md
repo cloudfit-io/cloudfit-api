@@ -124,7 +124,7 @@ curl -s http://127.0.0.1:8000/diff -H 'content-type: application/json' -d '{
 }'
 ```
 
-Returns the top pick for each workload plus the delta (instance change, price/hr, monthly cost, vCPU, RAM).
+Returns the top pick for each workload plus the delta (instance change, price/hr and monthly cost in each workload's pricing mode, vCPU, RAM, local SSD).
 
 ---
 

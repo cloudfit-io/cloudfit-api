@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Added
+- `/diff` reports `local_ssd_tb_delta` alongside the vCPU and RAM deltas.
+
+### Fixed
+- `/diff` compared on-demand prices even when the workloads were ranked on spot or 1-year committed-use prices, so a spot comparison reported the on-demand cost gap. Each side's price now uses the pricing mode it was ranked on.
 
 ## [0.9.0] - 2026-10-23
 

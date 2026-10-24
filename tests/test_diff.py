@@ -43,3 +43,22 @@ def test_diff_handles_unsatisfiable_side(client):
     assert body["a"]["top"] is not None
     assert body["b"]["top"] is None
     assert body["b"]["qualified"] == 0
+
+
+def _mt(id, price, spot, ssd=0.0):
+    return {"id": id, "provider": "gcp", "vcpu": 8, "ram_gb": 32, "price_hr": price,
+            "spot_price_hr": spot, "local_ssd_tb": ssd, "region": "us-central1"}
+
+
+def test_diff_compares_prices_in_the_ranked_pricing_mode(client):
+    """A spot comparison must report the spot price gap, not the on-demand one."""
+    a = _mt("a-8", price=1.00, spot=0.20)
+    b = _mt("b-8", price=1.10, spot=0.50, ssd=0.75)
+    payload = {
+        "a": {"workload": {"vcpu": 8, "ram_gb": 32, "pricing_mode": "spot"}, "candidates": [a]},
+        "b": {"workload": {"vcpu": 8, "ram_gb": 32, "pricing_mode": "spot"}, "candidates": [b]},
+    }
+    delta = client.post("/diff", json=payload).json()["delta"]
+    assert delta["price_hr_delta"] == 0.30          # 0.50 - 0.20, not 1.10 - 1.00
+    assert delta["monthly_cost_delta"] == 219.0
+    assert delta["local_ssd_tb_delta"] == 0.75
