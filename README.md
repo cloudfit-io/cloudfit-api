@@ -13,7 +13,7 @@ license: apache-2.0
 
 [![Release](https://img.shields.io/github/v/release/cloudfit-io/cloudfit-api)](https://github.com/cloudfit-io/cloudfit-api/releases)
 [![CI](https://github.com/cloudfit-io/cloudfit-api/actions/workflows/ci.yml/badge.svg)](https://github.com/cloudfit-io/cloudfit-api/actions/workflows/ci.yml)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue)](https://www.python.org/downloads/)
+[![Python 3.10 to 3.14](https://img.shields.io/badge/python-3.10%20to%203.14-blue)](https://www.python.org/downloads/)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 
 **HTTP API over [cloudfit-core](https://github.com/cloudfit-io/cloudfit-core).** A thin, stateless FastAPI service that scores cloud machine types against a workload profile.
@@ -123,7 +123,7 @@ pytest
 ruff check cloudfit_api/ && mypy --strict cloudfit_api/
 ```
 
-CI runs the same checks on Python 3.10 to 3.12 for every pull request.
+CI runs the same checks on Python 3.10 to 3.14 for every pull request.
 
 ---
 

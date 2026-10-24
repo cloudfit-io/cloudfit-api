@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [0.8.3] - 2026-10-23
+
+### Changed
+- README's Python badge and development notes reflect the tested range, Python 3.10 to 3.14.
+
 ## [0.8.2] - 2026-10-23
 
 ### Changed
