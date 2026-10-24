@@ -20,6 +20,8 @@ license: apache-2.0
 
 It ships with a **bundled GCP machine-type snapshot**, so it runs out of the box: no database, no cloud credentials, no provider calls at request time. The snapshot's prices are refreshed weekly by an automated pull request, and you can point the service at your own snapshot whenever you like.
 
+Live demo: **[Swagger docs on Hugging Face Spaces](https://chaitanyakasaraneni-cloudfit-api.hf.space/docs)**
+
 ---
 
 ## Endpoints
@@ -63,7 +65,7 @@ Each result includes the instance, `score`, the `cost_score` / `perf_score` / `a
 
 ### Pricing modes
 
-`workload.pricing_mode` picks the price the cost score uses: `on_demand`, `spot`, or `cud_1yr` (1-year committed use). Left unset, the `burst` archetype uses spot and everything else on-demand. Instances without a price for the chosen mode fall back to on-demand.
+`workload.pricing_mode` picks the price the cost score uses: `on_demand`, `spot`, or `cud_1yr` (1-year committed use). Left unset, a workload with `scheduling.spot: true` or the `burst` archetype uses spot, and everything else on-demand; an explicit `pricing_mode` always wins. Instances without a price for the chosen mode fall back to on-demand.
 
 ```bash
 curl -s http://127.0.0.1:8000/recommend -H 'content-type: application/json' -d '{
