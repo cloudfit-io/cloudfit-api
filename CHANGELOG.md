@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Added
+- `workload.cpu_arch` (`x86_64` or `arm64`), the CPU architecture hard floor from cloudfit-core 0.11, so x86-only tools are never recommended Arm instances. Requires `cloudfit-core>=0.11.2`.
+- Request limits: bodies over `CLOUDFIT_MAX_BODY_BYTES` (default 10 MB) get HTTP 413, including bodies streamed without a length, and `candidates` is capped at 10,000 per request, so one request cannot exhaust the service.
+- Data-integrity tests for both bundled snapshots (row counts within 10% of baseline, all regions present, no duplicates, every instance priced, discounted prices below on-demand, scoring fields populated). They run on every PR, including the weekly refresh PRs.
+
+### Changed
+- CI enforces at least 95% test coverage, audits runtime dependencies with `pip-audit`, and builds and smoke-tests the Docker image; Dependabot also proposes monthly Python dependency updates.
 
 ## [0.9.1] - 2026-10-24
 

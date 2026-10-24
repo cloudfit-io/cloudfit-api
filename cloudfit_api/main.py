@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from . import snapshot
 from .config import settings
+from .limits import BodySizeLimitMiddleware
 from .routers import diff, instances, providers, recommend
 
 
@@ -61,7 +62,9 @@ is pre-filled), then *Execute*.
   is `hard` (raise the floor, so instances without the buffer are disqualified) or
   `soft` (prefer the buffer in scoring without disqualifying).
 - Pass `candidates` in the request body to score your own catalog instead of
-  the bundled snapshot.
+  the bundled snapshot (at most 10,000 per request; request bodies over 10 MB get 413).
+- `workload.cpu_arch` (`x86_64` or `arm64`) is a hard floor for tools built for
+  one CPU architecture, e.g. x86-only BCLConvert versus AWS Graviton instances.
 - Scoring math: [cloudfit-core](https://github.com/cloudfit-io/cloudfit-core).
 """
 
@@ -85,6 +88,7 @@ app = FastAPI(
     license_info={"name": "Apache-2.0", "url": "https://www.apache.org/licenses/LICENSE-2.0"},
 )
 
+app.add_middleware(BodySizeLimitMiddleware, max_bytes=settings.max_body_bytes)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,

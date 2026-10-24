@@ -14,6 +14,10 @@ from cloudfit.models import MachineType, ScoredInstance, WorkloadProfile
 
 _REQUEST_RESERVED_KEYS = {"workload", "region", "top_k", "candidates"}
 
+# Upper bound on caller-supplied candidates per request. The bundled snapshots
+# hold about 7,000 instances, so real catalogs fit with room to spare.
+MAX_CANDIDATES = 10_000
+
 
 class RecommendRequest(BaseModel):
     model_config = {
@@ -62,7 +66,8 @@ class RecommendRequest(BaseModel):
     top_k: int = Field(default=10, ge=1, le=100, description="Number of ranked results to return.")
     candidates: list[MachineType] | None = Field(
         default=None,
-        description="Optional explicit candidate list. If omitted, the bundled snapshot is used.",
+        max_length=MAX_CANDIDATES,
+        description=f"Optional explicit candidate list (at most {MAX_CANDIDATES:,}). If omitted, the bundled snapshots are used.",
     )
 
 

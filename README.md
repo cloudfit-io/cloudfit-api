@@ -96,6 +96,17 @@ curl -s http://127.0.0.1:8000/recommend -H 'content-type: application/json' -d '
 
 `region` can also be set inside the `workload` object. Top-level `region` takes precedence when both are present.
 
+### CPU architecture
+
+Set `workload.cpu_arch` to `x86_64` or `arm64` when a tool is built for one architecture only (BCLConvert is x86_64-only; AWS Graviton, GCP Axion and Ampere are arm64). Instances of the other architecture are disqualified with a reason.
+
+```bash
+curl -s http://127.0.0.1:8000/recommend -H 'content-type: application/json' -d '{
+  "workload": {"vcpu": 32, "ram_gb": 64, "archetype": "io", "cpu_arch": "x86_64"},
+  "top_k": 3
+}'
+```
+
 ### Choose clouds
 
 Both clouds are scored by default. Set `workload.providers` to limit them:
@@ -158,6 +169,7 @@ The image honors `$PORT` (Cloud Run sets it automatically) and bundles the snaps
 |---|---|---|
 | `CLOUDFIT_SNAPSHOT_PATH` | `data/gcp_snapshot.json,data/aws_snapshot.json` | Comma-separated paths to machine-type snapshots; all are loaded and combined |
 | `CLOUDFIT_CORS_ORIGINS` | `*` | Comma-separated allowed origins |
+| `CLOUDFIT_MAX_BODY_BYTES` | `10000000` | Largest accepted request body; larger requests get HTTP 413. Caller-supplied `candidates` are also capped at 10,000 per request. |
 
 ---
 

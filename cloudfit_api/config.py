@@ -20,6 +20,8 @@ class Settings:
     CLOUDFIT_SNAPSHOT_PATH  comma-separated paths to machine-type snapshot JSON files
                             (default: the bundled GCP and AWS snapshots)
     CLOUDFIT_CORS_ORIGINS   comma-separated allowed origins (default "*")
+    CLOUDFIT_MAX_BODY_BYTES largest accepted request body in bytes (default 10000000);
+                            larger requests get HTTP 413
     """
 
     def __init__(self) -> None:
@@ -39,6 +41,7 @@ class Settings:
         ]
         origins = os.getenv("CLOUDFIT_CORS_ORIGINS", "*").strip()
         self.cors_origins = [o.strip() for o in origins.split(",")] if origins else ["*"]
+        self.max_body_bytes = int(os.getenv("CLOUDFIT_MAX_BODY_BYTES", "10000000"))
 
 
 settings = Settings()
