@@ -34,9 +34,12 @@ is pre-filled), then *Execute*.
 - `optimize_for` accepts `cost`, `balanced`, `performance`, or `availability`.
   The performance scorer is fit-based: an exact fit to the requested
   resources scores highest, and oversize decays.
-- Cost is normalized across the qualifying candidates: the cheapest scores 1.0
-  and the most expensive 0.0, so a real price gap moves the score. A candidate
-  with no price (`price_hr` <= 0) scores 0.0 on cost and is never treated as free.
+- Cost is scored relative to the cheapest qualifying candidate, which scores 1.0;
+  one costing twice as much per unit of work scores 0.5. A candidate with no
+  price (`price_hr` <= 0) scores 0.0 on cost and is never treated as free.
+- The bundled snapshots cover GCP and AWS. Both are scored by default; set
+  `workload.providers` (e.g. `["aws"]`) to limit the clouds, or `region` to one
+  region.
 - `archetype` sets the per-component perf weighting (e.g. `mem` weights RAM,
   `io` weights local SSD vs `scratch_tb`), so it does influence ranking on top
   of `optimize_for` and the hard floors. For the `gpu` archetype, GPU throughput

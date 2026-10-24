@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _No unreleased changes._
 
+## [0.9.0] - 2026-10-23
+
+### Added
+- **AWS.** A bundled `data/aws_snapshot.json` (the full Linux EC2 catalog for us-east-1, us-east-2, us-west-2, eu-west-1, and ap-southeast-1, about 6,000 types from cloudfit-provider-aws) is loaded alongside the GCP snapshot, so `/recommend`, `/instances`, `/providers`, and `/diff` cover both clouds. Both are scored by default; `workload.providers` (e.g. `["aws"]`) limits the clouds.
+- `CLOUDFIT_SNAPSHOT_PATH` accepts comma-separated paths and combines them; the default and the Docker image load both bundled snapshots.
+
+### Changed
+- Require `cloudfit-core>=0.10.1`, which names AWS families correctly in each result's `reason`.
+
+### Fixed
+- The Swagger page described the pre-0.10.0 cost scale (most expensive = 0.0); it now says cost is relative to the cheapest qualifying candidate.
+
 ## [0.8.5] - 2026-10-23
 
 ### Changed

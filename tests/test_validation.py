@@ -57,7 +57,7 @@ def test_snapshot_loads_nonempty_on_startup(client):
 
 def test_missing_snapshot_raises_clear_error(monkeypatch, tmp_path):
     snapshot.load_snapshot.cache_clear()
-    monkeypatch.setattr(settings, "snapshot_path", tmp_path / "does_not_exist.json")
+    monkeypatch.setattr(settings, "snapshot_paths", [tmp_path / "does_not_exist.json"])
     try:
         with pytest.raises(RuntimeError, match="Snapshot file not found"):
             snapshot.load_snapshot()

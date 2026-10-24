@@ -1,7 +1,8 @@
-"""Loads and queries the bundled machine-type snapshot.
+"""Loads and queries the bundled machine-type snapshots.
 
-The snapshot is a static JSON file of normalized `MachineType` records (the same
-shape cloudfit providers emit). It is loaded once and cached. This is what makes
+Each snapshot is a static JSON file of normalized `MachineType` records (the same
+shape cloudfit providers emit), one per provider. They are loaded once, combined,
+and cached. This is what makes
 the API stateless: no database, no live cloud calls, no credentials.
 """
 
@@ -17,31 +18,33 @@ from .config import settings
 
 @lru_cache(maxsize=1)
 def load_snapshot() -> list[MachineType]:
-    """Load the snapshot JSON into MachineType objects (cached for the process).
+    """Load every snapshot JSON into one MachineType list (cached for the process).
 
     Raises:
-        RuntimeError: if the snapshot file is missing or not valid JSON. The
+        RuntimeError: if a snapshot file is missing or not valid JSON. The
             message names the resolved path so a misconfigured
             CLOUDFIT_SNAPSHOT_PATH surfaces clearly at startup instead of as an
             opaque traceback.
     """
-    path = settings.snapshot_path
-    try:
-        text = path.read_text()
-    except FileNotFoundError as exc:
-        raise RuntimeError(
-            f"Snapshot file not found at {path}. Set CLOUDFIT_SNAPSHOT_PATH to a "
-            "valid machine-type snapshot JSON."
-        ) from exc
-    try:
-        raw = json.loads(text)
-    except json.JSONDecodeError as exc:
-        raise RuntimeError(f"Snapshot file at {path} is not valid JSON: {exc}") from exc
-    return [MachineType(**row) for row in raw]
+    instances: list[MachineType] = []
+    for path in settings.snapshot_paths:
+        try:
+            text = path.read_text()
+        except FileNotFoundError as exc:
+            raise RuntimeError(
+                f"Snapshot file not found at {path}. Set CLOUDFIT_SNAPSHOT_PATH to "
+                "comma-separated paths of valid machine-type snapshot JSON files."
+            ) from exc
+        try:
+            raw = json.loads(text)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(f"Snapshot file at {path} is not valid JSON: {exc}") from exc
+        instances.extend(MachineType(**row) for row in raw)
+    return instances
 
 
 def all_instances() -> list[MachineType]:
-    """Return every instance in the snapshot."""
+    """Return every instance across the snapshots."""
     return load_snapshot()
 
 

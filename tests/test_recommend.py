@@ -139,6 +139,31 @@ def test_recommend_region_in_workload_works_same_as_top_level(client):
         assert item["instance"]["region"] == "europe-west4"
 
 
+def test_recommend_scores_both_clouds_by_default(client):
+    body = client.post("/recommend", json={
+        "workload": _workload(vcpu=16, ram_gb=64), "top_k": 100,
+    }).json()
+    assert {r["instance"]["provider"] for r in body["results"]} == {"aws", "gcp"}
+
+
+def test_recommend_providers_limits_the_clouds(client):
+    body = client.post("/recommend", json={
+        "workload": _workload(vcpu=16, ram_gb=64, providers=["aws"]), "top_k": 20,
+    }).json()
+    assert body["results"]
+    assert {r["instance"]["provider"] for r in body["results"]} == {"aws"}
+
+
+def test_recommend_aws_region(client):
+    body = client.post("/recommend", json={
+        "workload": _workload(vcpu=8, ram_gb=32), "region": "eu-west-1", "top_k": 5,
+    }).json()
+    assert body["results"]
+    assert {(r["instance"]["provider"], r["instance"]["region"]) for r in body["results"]} == {
+        ("aws", "eu-west-1")
+    }
+
+
 def test_recommend_asymmetric_region_availability(client):
     """asia-southeast1 has fewer families than us-central1 in the bundled snapshot."""
     a = client.post("/recommend", json={

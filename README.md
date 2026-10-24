@@ -18,7 +18,7 @@ license: apache-2.0
 
 **HTTP API over [cloudfit-core](https://github.com/cloudfit-io/cloudfit-core).** A thin, stateless FastAPI service that scores cloud machine types against a workload profile.
 
-It ships with a **bundled GCP machine-type snapshot**, so it runs out of the box: no database, no cloud credentials, no provider calls at request time. The snapshot's prices are refreshed weekly by an automated pull request, and you can point the service at your own snapshot whenever you like.
+It ships with **bundled GCP and AWS machine-type snapshots**, so it runs out of the box: no database, no cloud credentials, no provider calls at request time. Both clouds are scored side by side unless you narrow it. The snapshots are refreshed weekly by automated pull requests, and you can point the service at your own whenever you like.
 
 Live demo: **[Swagger docs on Hugging Face Spaces](https://chaitanyakasaraneni-cloudfit-api.hf.space/docs)**
 
@@ -76,7 +76,7 @@ curl -s http://127.0.0.1:8000/recommend -H 'content-type: application/json' -d '
 
 ### Region-aware recommend
 
-Restrict candidates to a specific GCP region. The hard floor disqualifies anything not available there.
+Restrict candidates to a specific region (GCP or AWS). The hard floor disqualifies anything not available there.
 
 ```bash
 # us-central1 has the full catalog
@@ -95,6 +95,17 @@ curl -s http://127.0.0.1:8000/recommend -H 'content-type: application/json' -d '
 ```
 
 `region` can also be set inside the `workload` object. Top-level `region` takes precedence when both are present.
+
+### Choose clouds
+
+Both clouds are scored by default. Set `workload.providers` to limit them:
+
+```bash
+curl -s http://127.0.0.1:8000/recommend -H 'content-type: application/json' -d '{
+  "workload": {"vcpu": 16, "ram_gb": 64, "optimize_for": "cost", "providers": ["aws"]},
+  "top_k": 5
+}'
+```
 
 ### Browse instances
 
@@ -145,18 +156,26 @@ The image honors `$PORT` (Cloud Run sets it automatically) and bundles the snaps
 
 | Env var | Default | Purpose |
 |---|---|---|
-| `CLOUDFIT_SNAPSHOT_PATH` | `data/gcp_snapshot.json` | Path to the machine-type snapshot |
+| `CLOUDFIT_SNAPSHOT_PATH` | `data/gcp_snapshot.json,data/aws_snapshot.json` | Comma-separated paths to machine-type snapshots; all are loaded and combined |
 | `CLOUDFIT_CORS_ORIGINS` | `*` | Comma-separated allowed origins |
 
 ---
 
-## About the snapshot
+## About the snapshots
+
+### GCP
 
 `data/gcp_snapshot.json` is a **representative sample** of GCP Compute Engine machine types across **five regions** (`us-central1`, `us-east1`, `us-west1`, `europe-west4`, `asia-southeast1`). 875 entries total, with realistic asymmetric availability: us-central1 carries the full catalog, asia-southeast1 carries only the Tier 1 families that have rolled out everywhere. Every entry has a `perf_factor`, and GPU entries a `gpu_type`.
 
 **Prices are refreshed weekly.** [`cloudfit-provider-gcp`](https://github.com/cloudfit-io/cloudfit-provider-gcp)'s scheduled workflow pulls on-demand, spot, and 1-year committed-use prices for CPU/RAM machine types from the live GCP billing catalog and opens a pull request here; CI runs the test suite on it, and merging redeploys the live demo. GPU instances keep approximate on-demand prices and have no spot or committed-use price.
 
 The machine-type list itself is a curated sample, not an exhaustive catalog. Build your own with `cloudfit-provider-gcp` and point `CLOUDFIT_SNAPSHOT_PATH` at it, or supply your own `candidates` directly in the `/recommend` request body.
+
+### AWS
+
+`data/aws_snapshot.json` is the **full Linux EC2 catalog** for five regions (`us-east-1`, `us-east-2`, `us-west-2`, `eu-west-1`, `ap-southeast-1`): about 6,000 entries, built by [`cloudfit-provider-aws`](https://github.com/cloudfit-io/cloudfit-provider-aws) from AWS's public price list. Each entry has the on-demand price, the 1-year reserved price (scored as `cud_1yr`), a `perf_factor`, and for GPU instances a `gpu_type` and per-GPU VRAM. Previous-generation types are `deprecated`. AWS spot prices are not in the public price list, so in `spot` mode AWS instances fall back to on-demand.
+
+**Rebuilt weekly.** cloudfit-provider-aws's scheduled workflow regenerates the whole file from the live price list and opens a pull request here.
 
 > Stateless by design: a registry-backed, multi-provider deployment is a later step. This service is the thin scoring layer.
 
@@ -166,6 +185,7 @@ The machine-type list itself is a curated sample, not an exhaustive catalog. Bui
 
 - [`cloudfit-core`](https://github.com/cloudfit-io/cloudfit-core): scoring engine
 - [`cloudfit-provider-gcp`](https://github.com/cloudfit-io/cloudfit-provider-gcp): GCP machine-type fetcher
+- [`cloudfit-provider-aws`](https://github.com/cloudfit-io/cloudfit-provider-aws): AWS EC2 fetcher (public price list, no credentials)
 - [`cloudfit-ui`](https://github.com/cloudfit-io/cloudfit-ui): Gradio demo over the same scoring engine ([live demo](https://chaitanyakasaraneni-cloudfit-ui.hf.space)). Use this if you would rather fill a form than write JSON.
 
 ## License

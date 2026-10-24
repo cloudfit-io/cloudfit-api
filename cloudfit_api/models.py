@@ -57,7 +57,7 @@ class RecommendRequest(BaseModel):
     workload: WorkloadProfile
     region: str | None = Field(
         default=None,
-        description="Restrict candidates to this region. Bundled snapshot regions: us-central1, us-east1, us-west1, europe-west4, asia-southeast1. Top-level `region` overrides `workload.region`.",
+        description="Restrict candidates to this region. Bundled snapshot regions: GCP us-central1, us-east1, us-west1, europe-west4, asia-southeast1; AWS us-east-1, us-east-2, us-west-2, eu-west-1, ap-southeast-1. Top-level `region` overrides `workload.region`. To limit clouds, set `workload.providers` (e.g. [\"aws\"]).",
     )
     top_k: int = Field(default=10, ge=1, le=100, description="Number of ranked results to return.")
     candidates: list[MachineType] | None = Field(

@@ -17,7 +17,8 @@ class Settings:
 
     Env vars
     --------
-    CLOUDFIT_SNAPSHOT_PATH  path to the bundled machine-type snapshot JSON
+    CLOUDFIT_SNAPSHOT_PATH  comma-separated paths to machine-type snapshot JSON files
+                            (default: the bundled GCP and AWS snapshots)
     CLOUDFIT_CORS_ORIGINS   comma-separated allowed origins (default "*")
     """
 
@@ -26,11 +27,16 @@ class Settings:
         self.version = __version__
         self.description = (
             "Stateless HTTP API over cloudfit-core. Scores cloud machine types "
-            "against a workload profile using a bundled provider snapshot."
+            "against a workload profile using bundled provider snapshots."
         )
-        self.snapshot_path = Path(
-            os.getenv("CLOUDFIT_SNAPSHOT_PATH", str(_REPO_ROOT / "data" / "gcp_snapshot.json"))
+        default_paths = ",".join(
+            str(_REPO_ROOT / "data" / name) for name in ("gcp_snapshot.json", "aws_snapshot.json")
         )
+        self.snapshot_paths = [
+            Path(p.strip())
+            for p in os.getenv("CLOUDFIT_SNAPSHOT_PATH", default_paths).split(",")
+            if p.strip()
+        ]
         origins = os.getenv("CLOUDFIT_CORS_ORIGINS", "*").strip()
         self.cors_origins = [o.strip() for o in origins.split(",")] if origins else ["*"]
 

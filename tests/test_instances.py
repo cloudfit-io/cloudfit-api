@@ -45,6 +45,19 @@ def test_instances_unknown_region_is_empty(client):
     assert r.json()["count"] == 0
 
 
+def test_providers_summary_covers_gcp_and_aws(client):
+    providers = {p["name"]: p for p in client.get("/providers").json()["providers"]}
+    assert set(providers) == {"aws", "gcp"}
+    assert "us-east-1" in providers["aws"]["regions"]
+    assert "us-central1" in providers["gcp"]["regions"]
+
+
+def test_instances_provider_filter(client):
+    body = client.get("/instances", params={"provider": "aws", "limit": 1000}).json()
+    assert body["count"] > 0
+    assert {m["provider"] for m in body["instances"]} == {"aws"}
+
+
 def test_providers_summary(client):
     body = client.get("/providers").json()
     assert body["providers"]
