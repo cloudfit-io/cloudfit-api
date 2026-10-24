@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [0.9.1] - 2026-10-24
+
 ### Added
 - `/diff` reports `local_ssd_tb_delta` alongside the vCPU and RAM deltas.
 
