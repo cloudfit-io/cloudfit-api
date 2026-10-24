@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [0.8.4] - 2026-10-23
+
 ### Changed
 - README notes that `scheduling.spot: true` also selects spot pricing when `pricing_mode` is unset, and links the live Swagger demo.
 
